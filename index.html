@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Template • TodoMVC</title>
+		<link rel="stylesheet" href="node_modules/todomvc-common/base.css">
+		<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
+		<!-- CSS overrides - remove if you don't need it -->
+		<link rel="stylesheet" href="css/app.css">
+	</head>
+	<body>
+		<section class="todoapp" id="todoapp">
+			<header class="header">
+				<h1>todos</h1>
+				<input 
+				v-app-focus
+				 @keyup.enter='addItem'
+				class="new-todo" placeholder="What needs to be done?" >
+			</header>
+			<!-- This section should be hidden by default and shown when there are todos -->
+			<template v-if='items.length'>
+				<section class="main" >
+					<!-- items.length当值为0时，表示false,不显示 -->
+					<input  v-model='toggleAll' id="toggle-all" class="toggle-all" type="checkbox">
+					<label for="toggle-all">Mark all as complete</label>
+					<ul class="todo-list">
+						<!-- These are here just to show the structure of the list items -->
+						<!-- List items should get the class `editing` when editing and `completed` when marked as completed -->
+						<li v-for='(item,index) in filterItems' :class='{completed:item.completed,editing:item===currentItem}'>
+					   
+							<!-- 对是否应用这个completed进行判断，如果item.completed为true，则应用completed这个样式
+							根据点击时window获取的hash值，改变status，不同的status对应不同的操作，最终将过滤的结果返回给计算属性filteritems,并显示出来，并且status初始状态是all,对应的filteritems显示的是所有的数据 -->
+							
+							<!-- 当当前的item等于当前点击的currentItem,就应用editing这个样式-->
+							<div class="view">
+								<input class="toggle" type="checkbox" v-model='item.completed'>
+								<!-- 是否勾选取决于item.completed的值 -->
+								<label @dblclick='toEdit(item)'>{{item.content}}</label>
+								<button class="destroy" :value='item.id' @click='removeItem(index)'></button>
+								<!-- 给删除的x号进行绑定id,根据id进行绑定删除 -->
+							</div>
+							<!-- item的意思时点击任务项所对应的item，先有Item再有currentitem，尽量使用item
+							当函数形参用到了event，就将$event当作实参传递 -->
+							<input  v-app-focus='item===currentItem'
+							 @keyup.enter='finishEdit(item,index,$event)' @blur='finishEdit(item,index,$event)'
+							 
+							@keyup.esc='cancelEdit' class="edit" :value="item.content">
+							<!--  :value="item.content单向绑定，视图改了，数据不会改，因为不确定编辑的value值最终是否保存，所以使用单向，双向绑定视图改了数据也会改-->
+							<!-- <input class="edit" :value="currentItem.content">  -->
+							<!-- currentItem是只有当双击之后才会将item传给currentItem -->
+						   
+						</li>
+						
+					</ul>
+				</section>
+				<!-- This footer should hidden by default and shown when there are todos -->
+				<footer class="footer" >
+					<!-- This should be `0 items left` by default -->
+					<span class="todo-count"><strong>{{remaining}}</strong> item{{ remaining === 1 ? '' : 's' }} left</span>
+					<!-- Remove this if you don't implement routing -->
+					<ul class="filters">
+						<li>
+							<a  href="#/" :class='{selected:filterStatus==="all"}'>All</a>
+						</li>
+						<li>
+							<a href="#/active"  :class='{selected:filterStatus==="active"}'>Active</a>
+						</li>
+						<li>
+							<a href="#/completed" :class='{selected:filterStatus==="completed"}'>Completed</a>
+						</li>
+					</ul>
+					<!-- Hidden if no completed items are left ↓ -->
+					<button @click='removeCompleted'class="clear-completed" v-show='items.length>remaining'>Clear completed</button>
+				     <!-- 所有的任务项数当于未完成的，说明还有完成的任务项，显示clear completed按钮 -->
+				</footer>
+			</template>
+			<!-- template元素，页面渲染后template元素就不会有，所以就不能使用v-show,需要使用v-if与template搭配 -->
+		</section>
+		<footer class="info">
+			<p>Double-click to edit a todo</p>
+			<!-- Remove the below line ↓ -->
+			<p>Template by <a href="http://sindresorhus.com">Sindre Sorhus</a></p>
+			<!-- Change this out with your name and url ↓ -->
+			<p>Created by <a href="http://todomvc.com">you</a></p>
+			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+		</footer>
+		<!-- Scripts here. Don't remove ↓ -->
+		<script src="./node_modules/vue/dist/vue.js"></script>
+		<!-- 现有vue.js,后面再有app.js -->
+		<script src="node_modules/todomvc-common/base.js"></script>
+		<script src="js/app.js"></script>
+	</body>
+</html>
